@@ -1,0 +1,176 @@
+version: v1.5.7
+port: 7054
+
+cors:
+  enabled: false
+  origins:
+    - "*"
+
+debug: false
+crlsizelimit: 512000
+
+tls:
+  enabled: true
+  certfile: tls-cert.pem
+  keyfile: tls-key.pem
+  clientauth:
+    type: noclientcert
+    certfiles:
+
+ca:
+  name: fabric_ca-org1
+  keyfile: msp/keystore/ae2aa250e2ca716313a57690e639970597557110cad25d8bf4c729799d7ca539_sk
+  certfile: ca-cert.pem
+  reenrollIgnoreCertExpiry: false
+
+crl:
+  expiry: 24h
+
+registry:
+  maxenrollments: -1
+  identities:
+    - name: admin
+      pass: adminpw
+      type: admin
+      affiliation: ""
+      attrs:
+        hf.Registrar.Roles: "*"
+        hf.Registrar.DelegateRoles: "*"
+        hf.Revoker: true
+        hf.IntermediateCA: true
+        hf.GenCRL: true
+        hf.Registrar.Attributes: "*"
+        hf.AffiliationMgr: true
+
+db:
+  type: sqlite3
+  datasource: fabric-ca-server.db
+  tls:
+    enabled: false
+    certfiles:
+    client:
+      certfile:
+      keyfile:
+
+ldap:
+  enabled: false
+  url: ldap://<adminDN>:<adminPassword>@<host>:<port>/<base>
+  tls:
+    certfiles:
+    client:
+      certfile:
+      keyfile:
+  attribute:
+    names: ['uid','member']
+    converters:
+      - name:
+        value:
+    maps:
+      groups:
+        - name:
+          value:
+
+affiliations:
+  org1:
+    - dep1
+    
+ 
+
+signing:
+  default:
+    usage:
+      - digital signature
+    expiry: 8760h
+  profiles:
+    ca:
+      usage:
+        - cert sign
+        - crl sign
+      expiry: 43800h
+      caconstraint:
+        isca: true
+        maxpathlen: 0
+    tls:
+      usage:
+        - signing
+        - key encipherment
+        - server auth
+        - client auth
+        - key agreement
+      expiry: 8760h
+
+csr:
+  cn: fabric-ca-server
+  keyrequest:
+    algo: ecdsa
+    size: 256
+  names:
+    - C: US
+      ST: "North Carolina"
+      L:
+      O: org1.example.com
+      OU: Fabric
+  hosts:
+    - armbian
+    - localhost
+    - fabric_ca-org1
+    - 192.168.0.6
+    - 192.168.0.5
+  ca:
+    expiry: 131400h
+    pathlength: 1
+
+idemix:
+  rhpoolsize: 1000
+  nonceexpiration: 15s
+  noncesweepinterval: 15m
+  curve: amcl.Fp256bn
+
+bccsp:
+  default: SW
+  sw:
+    hash: SHA2
+    security: 256
+    filekeystore:
+      keystore: msp/keystore
+
+cacount:
+cafiles:
+
+intermediate:
+  parentserver:
+    url:
+    caname:
+  enrollment:
+    hosts:
+    profile:
+    label:
+  tls:
+    certfiles:
+    client:
+      certfile:
+      keyfile:
+
+cfg:
+  identities:
+    passwordattempts: 10
+
+operations:
+  listenAddress: 127.0.0.1:9443
+  tls:
+    enabled: false
+    cert:
+      file:
+    key:
+      file:
+    clientAuthRequired: false
+    clientRootCAs:
+      files: []
+
+metrics:
+  provider: disabled
+  statsd:
+    network: udp
+    address: 127.0.0.1:8125
+    writeInterval: 10s
+    prefix: server
